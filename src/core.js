@@ -228,7 +228,8 @@ async function pruneNonCriticalCssLauncher ({
   maxEmbeddedBase64Length,
   keepLargerMediaQueries,
   maxElementsToCheckPerSelector,
-  unstableKeepBrowserAlive
+  unstableKeepBrowserAlive,
+  pagePolyfillCallBack
 }) {
   let _hasExited = false
   // hacky to get around _hasExited only available in the scope of this function
@@ -299,6 +300,10 @@ async function pruneNonCriticalCssLauncher ({
     if (!page) {
       cleanupAndExit({ error: 'Could not open page in browser' })
       return
+    }
+
+    if (pagePolyfillCallBack && typeof pagePolyfillCallBack === 'function') {
+      page = await pagePolyfillCallBack(page)
     }
 
     // load the page (slow) [NOT BLOCKING]
